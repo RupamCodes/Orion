@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Orion — Local AI Research Notebook & Audio Studio
 
-## Getting Started
+> **100% Local RAG • Zero Cloud API Keys • Dual-Speaker Deep Dives • Verifiable Citations**
 
-First, run the development server:
+Orion is a privacy-first, editorial-grade AI research workspace inspired by Google's NotebookLM and OpenBookLM. It executes all vector retrieval, language modeling, study synthesis, and dual-host audio discussions directly on your machine.
 
+---
+
+## 🌟 Key Features
+
+- 🔒 **Zero API Keys & 100% Offline**: Runs with local Ollama (`llama3.2`, `mistral`, `qwen2.5`, `phi3`) or standalone browser-native RAG.
+- 📚 **Multi-Source Evidence Drawer**: Upload PDFs, Markdown documents, plain text, and custom research notes.
+- 🎯 **Grounded In-Line Citations**: Direct clickable citation markers `[1]`, `[2]` linking back to source passages.
+- 🎙️ **Studio Audio Deep Dives**: Dual-host dialogue podcast generator ("Alex" & "Sam") with real-time waveform visualization, playback controls, and synchronized transcript highlighting.
+- 📝 **Editorial Study Workspace**: Instant Study Guides, Executive Briefings, FAQs, and Research Scratchpad with pinned citations.
+- 🧠 **Kaggle Training Pipeline**: Complete QLoRA 4-bit fine-tuning scripts in `/training` to train your own local Orion model.
+
+---
+
+## 🚀 Quickstart
+
+### 1. Launch Frontend
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### 2. Optional: Connect Local Ollama Daemon
+```bash
+ollama run llama3.2:3b
+```
+Orion will automatically detect and connect to Ollama at `http://localhost:11434`.
+
+### 3. Optional: Run Local Python Backend
+```bash
+cd backend
+pip install -r requirements.txt
+python main.py
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📊 Kaggle Datasets & Training Suite
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See the full training documentation and scripts in [`training/README.md`](training/README.md).
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **SQuAD 2.0**: [Stanford Question Answering Dataset on Kaggle](https://www.kaggle.com/datasets/stanfordu/stanford-question-answering-dataset)
+- **News Summary**: [Inshorts Summarization on Kaggle](https://www.kaggle.com/datasets/sunnysai12345/news-summary)
+- **CNN/DailyMail**: [CNN/DailyMail News Text Summarization on Kaggle](https://www.kaggle.com/datasets/gowrishankarp/newspaper-text-summarization-cnn-dailymail)
+- **DialogSum**: [DialogSum Corpus on Hugging Face](https://huggingface.co/datasets/knkarthick/dialogsum)
