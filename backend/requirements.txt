@@ -7,3 +7,4 @@ chromadb>=0.4.24
 pypdf>=4.1.0
 numpy>=1.26.0
 python-multipart>=0.0.9
+sqlalchemy>=2.0.0

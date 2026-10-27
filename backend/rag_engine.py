@@ -8,6 +8,10 @@ import re
 import math
 from typing import List, Dict, Any, Optional
 
+from vector_store import PersistentVectorStore, get_vector_store
+from embedding import BaseEmbeddingService, get_embedding_service
+
+
 class DocumentParser:
     """
     Normalizes multi-format documents (PDF, TXT, MD, CSV, Web URLs) into structured text content.
@@ -49,11 +53,28 @@ class SemanticChunker:
         current_length = 0
         chunk_index = 0
         current_section = "General Overview"
+        current_page = None
         
         for para in paragraphs:
-            # Track header context
-            if para.startswith('#') or (len(para) < 60 and para.isupper()):
+            # Track page context if page indicator exists
+            p_match = re.search(r'\b(?:Page|p\.)\s*(\d+)\b', para, re.IGNORECASE)
+            if p_match:
+                try:
+                    current_page = int(p_match.group(1))
+                except ValueError:
+                    pass
+
+            # Track header/section context
+            if para.startswith('#'):
                 current_section = para.lstrip('#').strip()
+            elif len(para) < 60 and para.isupper():
+                current_section = para.strip()
+            else:
+                sec_match = re.search(r'\b(REMEMBER\s*\|\s*[^•\n\r]{3,80})', para)
+                if not sec_match:
+                    sec_match = re.search(r'\b(?:Page\s*\d+\s+)?(\d+\.\d*\s+[A-Za-z][^\n•\r]{2,60})', para)
+                if sec_match:
+                    current_section = sec_match.group(1).strip()
             
             para_len = len(para)
             if current_length + para_len > chunk_size and current_chunk_paras:
@@ -66,14 +87,20 @@ class SemanticChunker:
                     "text": chunk_text,
                     "metadata": {
                         "section": current_section,
+                        "page": current_page,
                         "word_count": len(chunk_text.split())
                     }
                 })
                 chunk_index += 1
                 
-                # Maintain overlap
-                overlap_text = chunk_text[-overlap:] if len(chunk_text) > overlap else chunk_text
-                current_chunk_paras = [overlap_text, para]
+                # Maintain overlap safely at word boundary
+                if len(chunk_text) > overlap:
+                    raw_overlap = chunk_text[-overlap:]
+                    first_space = raw_overlap.find(' ')
+                    overlap_text = raw_overlap[first_space + 1:].strip() if first_space != -1 else raw_overlap.strip()
+                else:
+                    overlap_text = chunk_text.strip()
+                current_chunk_paras = [overlap_text, para] if overlap_text else [para]
                 current_length = len(overlap_text) + para_len
             else:
                 current_chunk_paras.append(para)
@@ -89,6 +116,7 @@ class SemanticChunker:
                 "text": chunk_text,
                 "metadata": {
                     "section": current_section,
+                    "page": current_page,
                     "word_count": len(chunk_text.split())
                 }
             })
